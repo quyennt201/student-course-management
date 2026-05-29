@@ -1,3 +1,4 @@
+import { normalizePhoneNumber } from '@/lib/students/phone.utils'
 import type { StudentFormValues } from '@/lib/students/student-form.types'
 import type { Student, StudentInput } from '@/types/student'
 
@@ -34,7 +35,7 @@ export function mapFormToStudentInput(values: StudentFormValues): StudentInput {
   return {
     fullName: values.fullName.trim(),
     email: values.email.trim().toLowerCase(),
-    phone: values.phone.trim(),
+    phone: normalizePhoneNumber(values.phone),
     dateOfBirth: formatDateOfBirthForDisplay(values.dateOfBirth),
   }
 }

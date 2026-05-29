@@ -14,7 +14,7 @@ type CourseFormFieldsProps = {
   errors: CourseFormErrors
   enrolledCount: number
   onFieldChange: (field: CourseFormField, value: string) => void
-  onFieldBlur: (field: CourseFormField) => void
+  onFieldBlur: (field: CourseFormField, value: string) => void
   autoFocus?: boolean
 }
 
@@ -37,7 +37,8 @@ export function CourseFormFields({
           type="text"
           value={values.name}
           onChange={(e) => onFieldChange('name', e.target.value)}
-          onBlur={() => onFieldBlur('name')}
+          onBlur={(e) => onFieldBlur('name', e.target.value)}
+          maxLength={200}
           className={inputClass}
           autoFocus={autoFocus}
         />
@@ -49,7 +50,8 @@ export function CourseFormFields({
           rows={3}
           value={values.description}
           onChange={(e) => onFieldChange('description', e.target.value)}
-          onBlur={() => onFieldBlur('description')}
+          onBlur={(e) => onFieldBlur('description', e.target.value)}
+          maxLength={500}
           className={inputClass}
           placeholder="Mô tả ngắn về khóa học (không bắt buộc)"
         />
@@ -60,7 +62,7 @@ export function CourseFormFields({
           id={fieldId('status')}
           value={values.status}
           onChange={(e) => onFieldChange('status', e.target.value)}
-          onBlur={() => onFieldBlur('status')}
+          onBlur={(e) => onFieldBlur('status', e.target.value)}
           className={inputClass}
         >
           <option value="draft">Bản nháp</option>
@@ -83,7 +85,8 @@ export function CourseFormFields({
           inputMode="numeric"
           value={values.maxStudents}
           onChange={(e) => onFieldChange('maxStudents', e.target.value)}
-          onBlur={() => onFieldBlur('maxStudents')}
+          onBlur={(e) => onFieldBlur('maxStudents', e.target.value)}
+          step={1}
           className={inputClass}
         />
         {enrolledCount > 0 && (

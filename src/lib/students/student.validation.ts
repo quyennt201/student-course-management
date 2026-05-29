@@ -4,9 +4,28 @@ import type {
   StudentFormField,
   StudentFormValues,
 } from '@/lib/students/student-form.types'
+import { normalizePhoneNumber } from '@/lib/students/phone.utils'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_PATTERN = /^(0\d{9})$/
+
+/** Parse YYYY-MM-DD theo giờ địa phương (tránh lệch UTC của `new Date('YYYY-MM-DD')`). */
+function parseLocalDate(isoDate: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate.trim())
+  if (!match) return null
+  const year = Number.parseInt(match[1], 10)
+  const month = Number.parseInt(match[2], 10) - 1
+  const day = Number.parseInt(match[3], 10)
+  const date = new Date(year, month, day)
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month ||
+    date.getDate() !== day
+  ) {
+    return null
+  }
+  return date
+}
 
 type ValidateOptions = {
   existingStudents: Student[]
@@ -20,7 +39,7 @@ export function validateStudentForm(
   const errors: StudentFormErrors = {}
   const fullName = values.fullName.trim()
   const email = values.email.trim().toLowerCase()
-  const phone = values.phone.trim()
+  const phone = normalizePhoneNumber(values.phone)
 
   if (!fullName) {
     errors.fullName = 'Vui lòng nhập họ và tên'
@@ -45,8 +64,10 @@ export function validateStudentForm(
     }
   }
 
-  if (!phone) {
+  if (!values.phone.trim()) {
     errors.phone = 'Vui lòng nhập số điện thoại'
+  } else if (!phone) {
+    errors.phone = 'Số điện thoại chỉ được chứa chữ số'
   } else if (!PHONE_PATTERN.test(phone)) {
     errors.phone = 'Số điện thoại phải gồm 10 chữ số và bắt đầu bằng 0'
   }
@@ -54,11 +75,11 @@ export function validateStudentForm(
   if (!values.dateOfBirth) {
     errors.dateOfBirth = 'Vui lòng chọn ngày sinh'
   } else {
-    const dob = new Date(values.dateOfBirth)
+    const dob = parseLocalDate(values.dateOfBirth)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    if (Number.isNaN(dob.getTime())) {
+    if (!dob) {
       errors.dateOfBirth = 'Ngày sinh không hợp lệ'
     } else if (dob > today) {
       errors.dateOfBirth = 'Ngày sinh không được ở tương lai'

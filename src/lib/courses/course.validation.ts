@@ -13,7 +13,7 @@ function parseMaxStudents(value: string): number | null {
   if (!trimmed) return null
   if (!/^\d+$/.test(trimmed)) return null
   const num = Number.parseInt(trimmed, 10)
-  if (num < 1) return null
+  if (!Number.isFinite(num) || num < 1) return null
   return num
 }
 

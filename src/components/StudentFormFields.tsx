@@ -9,7 +9,7 @@ type StudentFormFieldsProps = {
   values: StudentFormValues
   errors: StudentFormErrors
   onFieldChange: (field: StudentFormField, value: string) => void
-  onFieldBlur: (field: StudentFormField) => void
+  onFieldBlur: (field: StudentFormField, value: string) => void
   autoFocus?: boolean
 }
 
@@ -31,7 +31,8 @@ export function StudentFormFields({
           type="text"
           value={values.fullName}
           onChange={(e) => onFieldChange('fullName', e.target.value)}
-          onBlur={() => onFieldBlur('fullName')}
+          onBlur={(e) => onFieldBlur('fullName', e.target.value)}
+          maxLength={100}
           className={inputClass}
           autoFocus={autoFocus}
         />
@@ -43,7 +44,8 @@ export function StudentFormFields({
           type="email"
           value={values.email}
           onChange={(e) => onFieldChange('email', e.target.value)}
-          onBlur={() => onFieldBlur('email')}
+          onBlur={(e) => onFieldBlur('email', e.target.value)}
+          maxLength={254}
           className={inputClass}
         />
       </FormField>
@@ -56,7 +58,8 @@ export function StudentFormFields({
           placeholder="0912345678"
           value={values.phone}
           onChange={(e) => onFieldChange('phone', e.target.value)}
-          onBlur={() => onFieldBlur('phone')}
+          onBlur={(e) => onFieldBlur('phone', e.target.value)}
+          maxLength={15}
           className={inputClass}
         />
       </FormField>
@@ -67,7 +70,7 @@ export function StudentFormFields({
           type="date"
           value={values.dateOfBirth}
           onChange={(e) => onFieldChange('dateOfBirth', e.target.value)}
-          onBlur={() => onFieldBlur('dateOfBirth')}
+          onBlur={(e) => onFieldBlur('dateOfBirth', e.target.value)}
           className={inputClass}
         />
       </FormField>

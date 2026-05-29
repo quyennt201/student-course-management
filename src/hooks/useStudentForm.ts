@@ -6,6 +6,7 @@ import {
   type StudentFormValues,
 } from '@/lib/students/student-form.types'
 import { mapFormToStudentInput, mapStudentToFormValues } from '@/lib/students/student.mapper'
+import { normalizePhoneNumber } from '@/lib/students/phone.utils'
 import {
   hasFormErrors,
   validateStudentField,
@@ -87,13 +88,18 @@ export function useStudentForm({ mode, open, onSuccess }: UseStudentFormOptions)
     }
   }
 
-  const blurField = (field: StudentFormField) => {
+  const blurField = (field: StudentFormField, fieldValue?: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }))
-    setValues((current) => {
-      const message = validateStudentField(field, current, validateOptions)
-      setErrors((prev) => ({ ...prev, [field]: message }))
-      return current
-    })
+
+    let nextValues = { ...values, ...(fieldValue !== undefined ? { [field]: fieldValue } : {}) }
+
+    if (field === 'phone') {
+      nextValues = { ...nextValues, phone: normalizePhoneNumber(nextValues.phone) }
+    }
+
+    setValues(nextValues)
+    const message = validateStudentField(field, nextValues, validateOptions)
+    setErrors((prev) => ({ ...prev, [field]: message }))
   }
 
   const handleSubmit = (e: FormEvent) => {

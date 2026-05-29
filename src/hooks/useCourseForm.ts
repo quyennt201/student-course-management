@@ -85,13 +85,13 @@ export function useCourseForm({ mode, open, onSuccess }: UseCourseFormOptions) {
     }
   }
 
-  const blurField = (field: CourseFormField) => {
+  const blurField = (field: CourseFormField, fieldValue?: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }))
-    setValues((current) => {
-      const message = validateCourseField(field, current, validateOptions)
-      setErrors((prev) => ({ ...prev, [field]: message }))
-      return current
-    })
+    const nextValues =
+      fieldValue !== undefined ? { ...values, [field]: fieldValue } : values
+    setValues(nextValues)
+    const message = validateCourseField(field, nextValues, validateOptions)
+    setErrors((prev) => ({ ...prev, [field]: message }))
   }
 
   const handleSubmit = (e: FormEvent) => {
