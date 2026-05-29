@@ -104,38 +104,6 @@ export function StudentEnrollmentModal({
           )}
 
           <section>
-            <h3 className="text-sm font-medium text-slate-900">Khóa đã đăng ký</h3>
-            {enrolledCourses.length === 0 ? (
-              <p className="mt-2 text-sm text-slate-500 italic">Chưa đăng ký khóa nào</p>
-            ) : (
-              <ul className="mt-2 space-y-2">
-                {enrolledCourses.map((course) => (
-                  <li
-                    key={course.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">
-                        {course.name}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {course.id} · {getCourseStatusLabel(course.status)}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleUnenroll(course.id)}
-                      className="shrink-0 rounded-md border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
-                    >
-                      Hủy đăng ký
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section>
             <h3 className="text-sm font-medium text-slate-900">Đăng ký khóa mới</h3>
             <p className="mt-1 text-xs text-slate-500">
               Chỉ khóa đang mở, còn chỗ và học viên chưa đăng ký
@@ -170,6 +138,40 @@ export function StudentEnrollmentModal({
                   Đăng ký
                 </button>
               </div>
+            )}
+          </section>
+
+          <section>
+            <h3 className="text-sm font-medium text-slate-900">
+              Khóa đã đăng ký ({enrolledCourses.length})
+            </h3>
+            {enrolledCourses.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-500 italic">Chưa đăng ký khóa nào</p>
+            ) : (
+              <ul className="mt-2 space-y-2">
+                {enrolledCourses.map((course) => (
+                  <li
+                    key={course.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-900">
+                        {course.name}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {course.id} · {getCourseStatusLabel(course.status)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleUnenroll(course.id)}
+                      className="shrink-0 rounded-md border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                    >
+                      Hủy đăng ký
+                    </button>
+                  </li>
+                ))}
+              </ul>
             )}
           </section>
         </div>

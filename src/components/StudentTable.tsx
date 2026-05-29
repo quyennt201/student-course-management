@@ -71,7 +71,11 @@ export function StudentTable({
                       {enrolledCourses.length === 0 ? (
                         <span className="text-slate-400 italic">Chưa đăng ký</span>
                       ) : (
-                        <ul className="space-y-0.5">
+                        <div>
+                          <p className="mb-1 text-xs font-medium text-slate-600">
+                            {enrolledCourses.length} khóa học
+                          </p>
+                          <ul className="space-y-0.5">
                           {enrolledCourses.map((course) => (
                             <li key={course.id} className="text-slate-700">
                               {course.name}{' '}
@@ -80,7 +84,8 @@ export function StudentTable({
                               </span>
                             </li>
                           ))}
-                        </ul>
+                          </ul>
+                        </div>
                       )}
                     </td>
                     <td className="px-4 py-3">
