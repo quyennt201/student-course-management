@@ -2,15 +2,21 @@ import { useMemo, useState } from 'react'
 import { AddStudentModal } from '@/components/AddStudentModal'
 import { DeleteStudentConfirmModal } from '@/components/DeleteStudentConfirmModal'
 import { EditStudentModal } from '@/components/EditStudentModal'
+import { Pagination } from '@/components/Pagination'
+import { StudentEnrollmentModal } from '@/components/StudentEnrollmentModal'
 import { StudentTable } from '@/components/StudentTable'
 import { useDeleteStudent } from '@/hooks/useDeleteStudent'
+import { usePagination } from '@/hooks/usePagination'
 import { filterStudentsByQuery } from '@/lib/students/student.search'
+import { useCourseStore } from '@/stores/useCourseStore'
 import { useStudentStore } from '@/stores/useStudentStore'
 import type { Student } from '@/types/student'
 
 export function StudentsPage() {
   const students = useStudentStore((s) => s.students)
+  const courses = useCourseStore((s) => s.courses)
   const [search, setSearch] = useState('')
+  const [enrollmentStudent, setEnrollmentStudent] = useState<Student | null>(null)
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [editingStudentId, setEditingStudentId] = useState<string | null>(null)
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null)
@@ -21,11 +27,12 @@ export function StudentsPage() {
     [students, search],
   )
 
+  const pagination = usePagination(filteredStudents, { resetKey: search })
   const hasStudents = students.length > 0
 
   return (
     <>
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -57,10 +64,23 @@ export function StudentsPage() {
         </div>
 
         <StudentTable
-          students={filteredStudents}
+          students={pagination.items}
+          courses={courses}
           hasStudents={hasStudents}
           onEdit={(student) => setEditingStudentId(student.id)}
           onDelete={(student) => setDeletingStudent(student)}
+          onManageEnrollment={(student) => setEnrollmentStudent(student)}
+        />
+
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          startIndex={pagination.startIndex}
+          endIndex={pagination.endIndex}
+          onPageChange={pagination.setPage}
+          onPageSizeChange={pagination.setPageSize}
         />
       </div>
 
@@ -69,6 +89,11 @@ export function StudentsPage() {
         studentId={editingStudentId}
         open={editingStudentId !== null}
         onClose={() => setEditingStudentId(null)}
+      />
+      <StudentEnrollmentModal
+        student={enrollmentStudent}
+        open={enrollmentStudent !== null}
+        onClose={() => setEnrollmentStudent(null)}
       />
       <DeleteStudentConfirmModal
         student={deletingStudent}

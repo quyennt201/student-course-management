@@ -8,6 +8,7 @@ import type { Course } from '@/types/course'
 type CourseTableProps = {
   courses: Course[]
   hasCourses: boolean
+  onView: (course: Course) => void
   onEdit: (course: Course) => void
   onDelete: (course: Course) => void
 }
@@ -65,7 +66,13 @@ function SlotBadge({ course }: { course: Course }) {
   )
 }
 
-export function CourseTable({ courses, hasCourses, onEdit, onDelete }: CourseTableProps) {
+export function CourseTable({
+  courses,
+  hasCourses,
+  onView,
+  onEdit,
+  onDelete,
+}: CourseTableProps) {
   const hasResults = courses.length > 0
 
   return (
@@ -107,10 +114,11 @@ export function CourseTable({ courses, hasCourses, onEdit, onDelete }: CourseTab
                 return (
                   <tr
                     key={course.id}
-                    className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/80"
+                    onClick={() => onView(course)}
+                    className="cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50/80"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-slate-600">{course.id}</td>
-                    <td className="px-4 py-3 font-medium text-slate-900">{course.name}</td>
+                    <td className="px-4 py-3 font-medium text-primary">{course.name}</td>
                     <td className="px-4 py-3">
                       <StatusBadge course={course} />
                     </td>
@@ -125,14 +133,20 @@ export function CourseTable({ courses, hasCourses, onEdit, onDelete }: CourseTab
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
-                          onClick={() => onEdit(course)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onEdit(course)
+                          }}
                           className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                         >
                           Sửa
                         </button>
                         <button
                           type="button"
-                          onClick={() => onDelete(course)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onDelete(course)
+                          }}
                           className="rounded-md border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
                         >
                           Xóa

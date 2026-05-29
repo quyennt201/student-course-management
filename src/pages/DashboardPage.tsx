@@ -6,7 +6,6 @@ import { useStudentStore } from '@/stores/useStudentStore'
 export function DashboardPage() {
   const studentCount = useStudentStore((s) => s.students.length)
   const courses = useCourseStore((s) => s.courses)
-
   const draftCourses = courses.filter((c) => c.status === 'draft')
   const openCourses = courses.filter((c) => c.status === 'open')
   const closedCourses = courses.filter((c) => c.status === 'closed')

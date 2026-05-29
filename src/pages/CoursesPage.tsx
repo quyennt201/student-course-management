@@ -1,12 +1,18 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AddCourseModal } from '@/components/AddCourseModal'
 import { CourseTable } from '@/components/CourseTable'
 import { DeleteCourseConfirmModal } from '@/components/DeleteCourseConfirmModal'
 import { EditCourseModal } from '@/components/EditCourseModal'
+import { Pagination } from '@/components/Pagination'
 import { useDeleteCourse } from '@/hooks/useDeleteCourse'
+import { usePagination } from '@/hooks/usePagination'
 import {
+  courseSlotFilterOptions,
   courseStatusFilterOptions,
+  filterCoursesBySlotStatus,
   filterCoursesByStatus,
+  type CourseSlotFilter,
   type CourseStatusFilter,
 } from '@/lib/courses/course.filter'
 import { filterCoursesByQuery } from '@/lib/courses/course.search'
@@ -15,9 +21,11 @@ import { useCourseStore } from '@/stores/useCourseStore'
 import type { Course } from '@/types/course'
 
 export function CoursesPage() {
+  const navigate = useNavigate()
   const courses = useCourseStore((s) => s.courses)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<CourseStatusFilter>('all')
+  const [slotFilter, setSlotFilter] = useState<CourseSlotFilter>('all')
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<string | null>(null)
   const [deletingCourse, setDeletingCourse] = useState<Course | null>(null)
@@ -26,9 +34,13 @@ export function CoursesPage() {
   const displayCourses = useMemo(() => {
     const bySearch = filterCoursesByQuery(courses, search)
     const byStatus = filterCoursesByStatus(bySearch, statusFilter)
-    return sortCoursesByStatus(byStatus)
-  }, [courses, search, statusFilter])
+    const bySlot = filterCoursesBySlotStatus(byStatus, slotFilter)
+    return sortCoursesByStatus(bySlot)
+  }, [courses, search, statusFilter, slotFilter])
 
+  const pagination = usePagination(displayCourses, {
+    resetKey: `${search}-${statusFilter}-${slotFilter}`,
+  })
   const hasCourses = courses.length > 0
 
   return (
@@ -67,9 +79,9 @@ export function CoursesPage() {
             />
           </div>
 
-          <div className="sm:min-w-[200px]">
+          <div className="sm:min-w-[180px]">
             <label htmlFor="course-status" className="mb-1 block text-sm font-medium text-slate-700">
-              Trạng thái
+              Trạng thái khóa
             </label>
             <select
               id="course-status"
@@ -84,13 +96,43 @@ export function CoursesPage() {
               ))}
             </select>
           </div>
+
+          <div className="sm:min-w-[180px]">
+            <label htmlFor="course-slot" className="mb-1 block text-sm font-medium text-slate-700">
+              Tình trạng chỗ
+            </label>
+            <select
+              id="course-slot"
+              value={slotFilter}
+              onChange={(e) => setSlotFilter(e.target.value as CourseSlotFilter)}
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              {courseSlotFilterOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <CourseTable
-          courses={displayCourses}
+          courses={pagination.items}
           hasCourses={hasCourses}
+          onView={(course) => navigate(`/course/${course.id}`)}
           onEdit={(course) => setEditingCourseId(course.id)}
           onDelete={(course) => setDeletingCourse(course)}
+        />
+
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          startIndex={pagination.startIndex}
+          endIndex={pagination.endIndex}
+          onPageChange={pagination.setPage}
+          onPageSizeChange={pagination.setPageSize}
         />
       </div>
 
