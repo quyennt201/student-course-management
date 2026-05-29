@@ -1,18 +1,12 @@
 import { Link } from 'react-router-dom'
-import { getCourseCapacityInfo } from '@/lib/courses/course.capacity'
+import { getTotalEnrollmentCount } from '@/lib/enrollments/enrollment.queries'
 import { useCourseStore } from '@/stores/useCourseStore'
 import { useStudentStore } from '@/stores/useStudentStore'
 
 export function DashboardPage() {
   const studentCount = useStudentStore((s) => s.students.length)
   const courses = useCourseStore((s) => s.courses)
-  const draftCourses = courses.filter((c) => c.status === 'draft')
-  const openCourses = courses.filter((c) => c.status === 'open')
-  const closedCourses = courses.filter((c) => c.status === 'closed')
-  const coursesWithSlots = openCourses.filter(
-    (c) => getCourseCapacityInfo(c).slotStatus === 'available',
-  )
-  const fullCourses = openCourses.filter((c) => getCourseCapacityInfo(c).slotStatus === 'full')
+  const enrollmentCount = getTotalEnrollmentCount(courses)
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -23,7 +17,7 @@ export function DashboardPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-medium text-slate-500">Tổng số học viên</p>
           <p className="mt-2 text-3xl font-semibold tabular-nums text-slate-900">
@@ -39,21 +33,12 @@ export function DashboardPage() {
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Khóa đang mở</p>
-          <p className="mt-2 text-3xl font-semibold tabular-nums text-emerald-700">
-            {openCourses.length}
+          <p className="text-sm font-medium text-slate-500">Tổng lượt đăng ký</p>
+          <p className="mt-2 text-3xl font-semibold tabular-nums text-slate-900">
+            {enrollmentCount}
           </p>
           <p className="mt-1 text-xs text-slate-500">
-            Bản nháp: {draftCourses.length} · Đã đóng: {closedCourses.length}
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Chỗ khóa học (đang mở)</p>
-          <p className="mt-2 text-sm text-slate-700">
-            <span className="font-semibold text-sky-700">{coursesWithSlots.length}</span> còn chỗ
-            {' · '}
-            <span className="font-semibold text-red-700">{fullCourses.length}</span> đã đầy
+            Tổng số học viên đã ghi danh vào các khóa
           </p>
         </div>
       </div>

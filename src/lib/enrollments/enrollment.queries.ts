@@ -2,6 +2,11 @@ import { getCourseCapacityInfo } from '@/lib/courses/course.capacity'
 import type { Course } from '@/types/course'
 import type { Student } from '@/types/student'
 
+/** Tổng số lượt đăng ký (mỗi học viên trên mỗi khóa tính 1 lượt). */
+export function getTotalEnrollmentCount(courses: Course[]): number {
+  return courses.reduce((sum, course) => sum + course.enrolledStudentIds.length, 0)
+}
+
 export function getEnrolledCourses(courses: Course[], studentId: string): Course[] {
   return courses.filter((course) => course.enrolledStudentIds.includes(studentId))
 }
