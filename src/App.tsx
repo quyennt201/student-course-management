@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/AppLayout'
+import { CoursesPage } from '@/pages/CoursesPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { StudentsPage } from '@/pages/StudentsPage'
 
@@ -10,6 +11,7 @@ function App() {
         <Route element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="student" element={<StudentsPage />} />
+          <Route path="course" element={<CoursesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

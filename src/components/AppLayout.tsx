@@ -23,6 +23,9 @@ export function AppLayout() {
             <NavLink to="/student" className={navLinkClass}>
               Học viên
             </NavLink>
+            <NavLink to="/course" className={navLinkClass}>
+              Khóa học
+            </NavLink>
           </nav>
         </div>
       </header>
